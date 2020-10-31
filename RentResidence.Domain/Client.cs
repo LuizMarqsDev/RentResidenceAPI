@@ -8,7 +8,7 @@ namespace RentResidence.Domain
     public class Client
     {
 
-        public int ClienteId { get; set; }
+        public int ClientId { get; set; }
 
         [Required]
         [StringLength(14)]
