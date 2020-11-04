@@ -12,12 +12,14 @@ namespace RentResidence.Repository
     {
         private readonly RentResidenceContext _context;
 
-
+        
         public RentResidenceRepository(RentResidenceContext context)
         {
             _context = context;
+            _context.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
         }
 
+        #region Gerais
         public void Add<T>(T entity) where T : class
         {
             _context.Add(entity);
@@ -37,14 +39,14 @@ namespace RentResidence.Repository
         {
             return (await _context.SaveChangesAsync()) > 0;
         }
+        #endregion
 
 
+        #region Clients
         public async Task<Client[]> GetAllClientsAsync()
         {
             IQueryable<Client> query = _context.Clients;
-
-            query = query.OrderBy(x => x.ClientId);
-
+            
             return await query.ToArrayAsync();
         }
 
@@ -52,20 +54,20 @@ namespace RentResidence.Repository
         {
             IQueryable<Client> query = _context.Clients;
 
+            query = query.OrderBy(x => x.ClientId);
+
             return await query.LastOrDefaultAsync();
 
         }
 
-        //public async Task<Client> GetClientAmountAsync()
-        //{
-        //    IQueryable<Client> query = _context.Clients;
+        public async Task<Client> GetClientByIdAsync(int id)
+        {
+            IQueryable<Client> query = _context.Clients;
 
-        //    query = query.All(x => x.ClientId);
+            query = query.Where(x => x.ClientId == id);
 
-        //    return await query.CountAsync();
-
-        //}
-
+            return await query.FirstOrDefaultAsync();
+        }
         public async Task<Client[]> GetClientOrderByNomeCompletoAsync()
         {
             IQueryable<Client> query = _context.Clients;
@@ -94,11 +96,13 @@ namespace RentResidence.Repository
             return await query.ToArrayAsync();
         }
 
+        #endregion
 
-
+        #region Residences
         public async Task<Residence[]> GetAllResidenceAsync()
         {
-            IQueryable<Residence> query = _context.Residences;
+            IQueryable<Residence> query = _context.Residences
+                .Include(c => c.Client);
 
             query = query.OrderBy(x => x.ResidenceId);
 
@@ -109,7 +113,8 @@ namespace RentResidence.Repository
 
         public async Task<Residence[]> GetResidenceByCEPAsync(string cep)
         {
-            IQueryable<Residence> query = _context.Residences;
+            IQueryable<Residence> query = _context.Residences
+                .Include(c => c.Client);
 
             query = query.Where(x => x.CEP == cep);
 
@@ -118,7 +123,8 @@ namespace RentResidence.Repository
 
         public async Task<Residence[]> GetResidenceOrderByCidadeAsync()
         {
-            IQueryable<Residence> query = _context.Residences;
+            IQueryable<Residence> query = _context.Residences
+                .Include(c => c.Client);
 
             query = query.OrderBy(x => x.Cidade);
 
@@ -127,14 +133,24 @@ namespace RentResidence.Repository
 
         public async Task<Residence> GetResidenceByIdAsync(int id)
         {
-            IQueryable<Residence> query = _context.Residences;
+            IQueryable<Residence> query = _context.Residences
+                .Include(c => c.Client);
 
             query = query.Where(x => x.ResidenceId == id);
 
             return await query.FirstOrDefaultAsync();
         }
 
+        public async Task<Residence> GetResidenceLastAsync()
+        {
+            IQueryable<Residence> query = _context.Residences
+                .Include(c => c.Client);
 
+            query = query.OrderBy(x => x.ResidenceId);
 
+            return await query.LastOrDefaultAsync();
+
+        }
+        #endregion
     }
 }

@@ -33,7 +33,10 @@ namespace RentResidence.WebAPI
             services.AddDbContext<RentResidenceContext>(options =>
                   options.UseSqlServer(Configuration.GetConnectionString("RentResidenceConnection"), builder =>
                       builder.MigrationsAssembly("RentResidence.Repository")));
-           
+
+            services.AddScoped<IRentResidenceRepository, RentResidenceRepository>();
+
+
             services.AddControllers();
 
             services.AddSwaggerGen(c =>
@@ -82,7 +85,7 @@ namespace RentResidence.WebAPI
             // specifying the Swagger JSON endpoint.
             app.UseSwaggerUI(c =>
             {
-                c.SwaggerEndpoint("/swagger/v1/swagger.json", "Financial");
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "RentResidence");
 
             });
 

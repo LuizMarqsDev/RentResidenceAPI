@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Text;
 
 namespace RentResidence.Domain
@@ -13,10 +14,6 @@ namespace RentResidence.Domain
         [Required]
         [StringLength(14)]
         public string CPF { get; set; }
-
-        [Required]
-        [StringLength(10)]
-        public DateTime DataNascimento { get; set; }
 
         [Required]
         [StringLength(70)]
@@ -34,6 +31,6 @@ namespace RentResidence.Domain
         [StringLength(20)]
         public string Telefone { get; set; }
         public int ResidenceId { get; set; }
-        public virtual Residence Residence { get; set; }
+        public Residence Residence { get; }
     }
 }
