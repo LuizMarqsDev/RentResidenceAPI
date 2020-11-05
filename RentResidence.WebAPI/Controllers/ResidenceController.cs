@@ -253,6 +253,26 @@ public class ResidenceController : ControllerBase
         }
     }
 
+    /// <summary>
+    ///  Método que retorna a quantidade de Residências
+    /// </summary>
+    /// <returns></returns>
+    [HttpGet]
+    [Route("amount")]
+    public async Task<IActionResult> GetAmount()
+    {
+
+        try
+        {
+            var results = await _repo.GetResidenceAmountAsync();
+            return Ok(results);
+        }
+        catch (System.Exception ex)
+        {
+            return this.StatusCode(StatusCodes.Status500InternalServerError, ApiReturnMessages.DbFailed + ex.Message);
+        }
+    }
+
     #endregion
 
 }

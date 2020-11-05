@@ -25,8 +25,9 @@ namespace RentResidence.Repository
         Task<Client> GetClientByCPFAsync(string CPF);
         Task<Client> GetClientLastAsync();
         Task<Client> GetClientByIdAsync(int id);
-     
-      
+        Task<int> GetClientAmountAsync();
+
+
 
         #endregion
 
@@ -36,6 +37,7 @@ namespace RentResidence.Repository
         Task<Residence[]> GetResidenceOrderByCidadeAsync();
         Task<Residence> GetResidenceByIdAsync(int ID);
         Task<Residence> GetResidenceLastAsync();
+        Task<int> GetResidenceAmountAsync();
 
 
         #endregion

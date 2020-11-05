@@ -96,6 +96,14 @@ namespace RentResidence.Repository
             return await query.ToArrayAsync();
         }
 
+        public async Task<int> GetClientAmountAsync()
+        {
+            IQueryable<Client> query = _context.Clients;
+
+            return await query.CountAsync();
+
+        }
+
         #endregion
 
         #region Residences
@@ -149,6 +157,15 @@ namespace RentResidence.Repository
             query = query.OrderBy(x => x.ResidenceId);
 
             return await query.LastOrDefaultAsync();
+
+        }
+
+        public async Task<int> GetResidenceAmountAsync()
+        {
+            IQueryable<Residence> query = _context.Residences
+                .Include(c => c.Client);
+
+            return await query.CountAsync();
 
         }
         #endregion
