@@ -2,10 +2,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using RentResidence.Domain;
 using RentResidence.Repository;
+using RentResidence.WebAPI.DTO;
 using RentResidence.WebAPI.Helpers;
 
 namespace RentResidence.WebAPI.Controllers
@@ -16,8 +18,11 @@ namespace RentResidence.WebAPI.Controllers
     {
 
         private readonly IRentResidenceRepository _repo;
-        public ClientController(IRentResidenceRepository repo)
+
+        private readonly IMapper _mapper;
+        public ClientController(IRentResidenceRepository repo, IMapper mapper)
         {
+            _mapper = mapper;
             _repo = repo;
         }
 
@@ -32,7 +37,8 @@ namespace RentResidence.WebAPI.Controllers
         {
             try
             {
-                var results = await _repo.GetAllClientsAsync();
+
+                var results = _mapper.Map<ClientDto[]>(await _repo.GetAllClientsAsync());
                 return Ok(results);
             }
             catch (System.Exception ex)
@@ -45,18 +51,21 @@ namespace RentResidence.WebAPI.Controllers
         /// <summary>
         /// Método que irá incrementar um registro na lista de clientes
         /// </summary>
-        /// <param name="client"></param>
+        /// <param name="clientDto"></param>
         /// <returns></returns>
         [HttpPost]
-        public async Task<IActionResult> Post(Client client)
+        public async Task<IActionResult> Post(ClientDto clientDto)
         {
             try
             {
+                var client = _mapper.Map<Client>(clientDto);
+
                 _repo.Add(client);
 
                 if (await _repo.SaveChangeAsync())
                 {
-                    return Created($"/api/Client/{client.ResidenceId}", client);
+                    clientDto.ClientId = client.ClientId;
+                    return Created($"/api/Client/{client.ClientId}", clientDto);
                 }
             }
             catch (System.Exception ex)
@@ -72,19 +81,22 @@ namespace RentResidence.WebAPI.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpPut("{clientId}")]
-        public async Task<IActionResult> Put(int clientId, Client client)
+        public async Task<IActionResult> Put(int clientId, ClientDto clientDto)
         {
             try
             {
-                client.ClientId = clientId;
+                clientDto.ClientId = clientId;
                 var upd = await _repo.GetClientByIdAsync(clientId);
                 if (upd == null) return NotFound();
 
-                _repo.Update(client);
+                _mapper.Map(clientDto, upd);
+
+                _repo.Update(upd);
 
                 if (await _repo.SaveChangeAsync())
                 {
-                    return Created($"/api/Client/{client.ClientId}", client);
+                    clientDto.ClientId = clientDto.ClientId;
+                    return Created($"/api/Client/{clientDto.ClientId}", clientDto);
                 }
             }
             catch (System.Exception ex)
@@ -111,16 +123,19 @@ namespace RentResidence.WebAPI.Controllers
 
                 upd.NomeCompleto = nomeCompleto;
 
+
                 _repo.Update(upd);
+
+                var clientDto = _mapper.Map<ClientDto>(upd);
 
                 if (await _repo.SaveChangeAsync())
                 {
-                    return Created($"/api/Client/{clientId}", upd);
+                    return Created($"/api/Client/{clientId}", clientDto);
                 }
             }
-            catch (System.Exception)
+            catch (System.Exception e)
             {
-                return this.StatusCode(StatusCodes.Status500InternalServerError, ApiReturnMessages.DbFailed);
+                return this.StatusCode(StatusCodes.Status500InternalServerError, ApiReturnMessages.DbFailed + e.Message);
             }
 
             return BadRequest();
@@ -170,7 +185,8 @@ namespace RentResidence.WebAPI.Controllers
         {
             try
             {
-                var results = await _repo.GetClientsByNameAsync(nomeCompleto);
+                var results = _mapper.Map<ClientDto[]>(await _repo.GetClientsByNameAsync(nomeCompleto));
+
                 return Ok(results);
             }
             catch (System.Exception ex)
@@ -187,9 +203,10 @@ namespace RentResidence.WebAPI.Controllers
         [Route("Last")]
         public async Task<IActionResult> GetLast()
         {
+
             try
             {
-                var results = await _repo.GetClientLastAsync();
+                var results = _mapper.Map<ClientDto>(await _repo.GetClientLastAsync());
                 return Ok(results);
             }
             catch (System.Exception ex)
@@ -208,7 +225,7 @@ namespace RentResidence.WebAPI.Controllers
         {
             try
             {
-                var results = await _repo.GetClientOrderByNomeCompletoAsync();
+                var results = _mapper.Map<ClientDto[]>(await _repo.GetClientOrderByNomeCompletoAsync());
                 return Ok(results);
             }
             catch (System.Exception ex)
@@ -228,7 +245,7 @@ namespace RentResidence.WebAPI.Controllers
         {
             try
             {
-                var results = await _repo.GetClientByCPFAsync(clienteCPF);
+                var results = _mapper.Map<ClientDto>(await _repo.GetClientByCPFAsync(clienteCPF));
                 return Ok(results);
             }
             catch (System.Exception ex)

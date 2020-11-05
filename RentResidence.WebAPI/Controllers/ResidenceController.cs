@@ -2,10 +2,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using RentResidence.Domain;
 using RentResidence.Repository;
+using RentResidence.WebAPI.DTO;
 using RentResidence.WebAPI.Helpers;
 
 [Route("api/[controller]")]
@@ -14,9 +16,11 @@ public class ResidenceController : ControllerBase
 {
 
     private readonly IRentResidenceRepository _repo;
-    public ResidenceController(IRentResidenceRepository repo)
+    private readonly IMapper _mapper;
+    public ResidenceController(IRentResidenceRepository repo, IMapper mapper)
     {
         _repo = repo;
+        _mapper = mapper;
     }
 
     #region CRUD
@@ -29,7 +33,7 @@ public class ResidenceController : ControllerBase
     {
         try
         {
-            var results = await _repo.GetAllResidenceAsync();
+            var results = _mapper.Map<ResidenceDto[]>(await _repo.GetAllResidenceAsync());
             return Ok(results);
         }
         catch (System.Exception ex)
@@ -42,18 +46,21 @@ public class ResidenceController : ControllerBase
     /// <summary>
     /// Método que irá incrementar um registro na lista de Residências
     /// </summary>
-    /// <param name="residence"></param>
+    /// <param name="residenceDto"></param>
     /// <returns></returns>
     [HttpPost]
-    public async Task<IActionResult> Post(Residence residence)
+    public async Task<IActionResult> Post(ResidenceDto residenceDto)
     {
         try
         {
+            var residence = _mapper.Map<Residence>(residenceDto);
+
             _repo.Add(residence);
 
             if (await _repo.SaveChangeAsync())
             {
-                return Created($"/api/Residence/{residence.ResidenceId}", residence);
+                residenceDto.ResidenceId = residence.ResidenceId;
+                return Created($"/api/Residence/{residence.ResidenceId}", residenceDto);
             }
         }
         catch (System.Exception ex)
@@ -69,20 +76,23 @@ public class ResidenceController : ControllerBase
     /// </summary>
     /// <returns></returns>
     [HttpPut("{residenceId}")]
-    public async Task<IActionResult> Put(int residenceId, [FromBody] Residence residence)
+    public async Task<IActionResult> Put(int residenceId,  ResidenceDto residence)
     {
         try
-        {
-            residence.ResidenceId = residenceId;
+        {   residence.ResidenceId = residenceId;
+
             var upd = await _repo.GetResidenceByIdAsync(residenceId);
             if (upd == null) return NotFound();
 
-            _repo.Update(residence);
+            _mapper.Map(residence, upd);
+
+            _repo.Update(upd);
 
             if (await _repo.SaveChangeAsync())
             {
                 return Created($"/api/Residence/{residence.ResidenceId}", residence);
             }
+
         }
         catch (System.Exception ex)
         {
@@ -110,9 +120,11 @@ public class ResidenceController : ControllerBase
 
             _repo.Update(upd);
 
+            var residenceDto = _mapper.Map<ResidenceDto>(upd);
+
             if (await _repo.SaveChangeAsync())
             {
-                return Created($"/api/Client/{residenceId}", upd);
+                return Created($"/api/Residence/{residenceId}", residenceDto);
             }
         }
         catch (System.Exception)
@@ -168,7 +180,7 @@ public class ResidenceController : ControllerBase
     {
         try
         {
-            var results = await _repo.GetResidenceByCEPAsync(cep);
+            var results = _mapper.Map<ResidenceDto[]>(await _repo.GetResidenceByCEPAsync(cep));
             return Ok(results);
         }
         catch (System.Exception ex)
@@ -190,7 +202,7 @@ public class ResidenceController : ControllerBase
     {
         try
         {
-            var results = await _repo.GetResidenceByIdAsync(id);
+            var results = _mapper.Map<ResidenceDto>(await _repo.GetResidenceByIdAsync(id));
             return Ok(results);
         }
         catch (System.Exception ex)
@@ -211,7 +223,7 @@ public class ResidenceController : ControllerBase
     {
         try
         {
-            var results = await _repo.GetResidenceOrderByCidadeAsync();
+            var results = _mapper.Map<ResidenceDto[]>(await _repo.GetResidenceOrderByCidadeAsync());
             return Ok(results);
         }
         catch (System.Exception ex)
@@ -231,7 +243,7 @@ public class ResidenceController : ControllerBase
     {
         try
         {
-            var results = await _repo.GetResidenceLastAsync();
+            var results = _mapper.Map<ResidenceDto>(await _repo.GetResidenceLastAsync());
             return Ok(results);
         }
         catch (System.Exception ex)
