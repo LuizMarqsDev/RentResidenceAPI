@@ -35,7 +35,7 @@ namespace RentResidence.Domain
         [Required]
         [StringLength(70)]
         public string Rua { get; set; }
-        public Client Client { get; private set; }
+        public Client Client {  get; private set; }
 
     }
 }

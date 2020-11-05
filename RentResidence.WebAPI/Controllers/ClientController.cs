@@ -70,7 +70,7 @@ namespace RentResidence.WebAPI.Controllers
             }
             catch (System.Exception ex)
             {
-                return this.StatusCode(StatusCodes.Status500InternalServerError, ApiReturnMessages.DbFailed + ex.Message);
+                return this.StatusCode(StatusCodes.Status500InternalServerError, ApiReturnMessages.DbFailed + ApiReturnMessages.CPFFailed + ex.Message);
             }
 
             return BadRequest();
@@ -101,7 +101,7 @@ namespace RentResidence.WebAPI.Controllers
             }
             catch (System.Exception ex)
             {
-                return this.StatusCode(StatusCodes.Status500InternalServerError, ApiReturnMessages.DbFailed + ex.Message);
+                return this.StatusCode(StatusCodes.Status500InternalServerError, ApiReturnMessages.DbFailed + ApiReturnMessages.CPFFailed  + ex.Message);
             }
 
             return BadRequest();

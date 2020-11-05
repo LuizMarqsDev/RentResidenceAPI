@@ -9,8 +9,8 @@ using RentResidence.Repository;
 namespace RentResidence.Repository.Migrations
 {
     [DbContext(typeof(RentResidenceContext))]
-    [Migration("20201104193756_AjusteFK")]
-    partial class AjusteFK
+    [Migration("20201105122307_AjustesGerais")]
+    partial class AjustesGerais
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -56,6 +56,9 @@ namespace RentResidence.Repository.Migrations
                         .HasMaxLength(20);
 
                     b.HasKey("ClientId");
+
+                    b.HasIndex("CPF")
+                        .IsUnique();
 
                     b.HasIndex("ResidenceId")
                         .IsUnique();
@@ -110,7 +113,7 @@ namespace RentResidence.Repository.Migrations
 
             modelBuilder.Entity("RentResidence.Domain.Client", b =>
                 {
-                    b.HasOne("RentResidence.Domain.Residence", null)
+                    b.HasOne("RentResidence.Domain.Residence", "Residence")
                         .WithOne("Client")
                         .HasForeignKey("RentResidence.Domain.Client", "ResidenceId")
                         .OnDelete(DeleteBehavior.Restrict)

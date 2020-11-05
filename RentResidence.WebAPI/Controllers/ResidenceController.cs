@@ -76,21 +76,22 @@ public class ResidenceController : ControllerBase
     /// </summary>
     /// <returns></returns>
     [HttpPut("{residenceId}")]
-    public async Task<IActionResult> Put(int residenceId,  ResidenceDto residence)
+    public async Task<IActionResult> Put(int residenceId,  ResidenceDto residenceDto)
     {
         try
-        {   residence.ResidenceId = residenceId;
+        {
+            residenceDto.ResidenceId = residenceId;
 
             var upd = await _repo.GetResidenceByIdAsync(residenceId);
             if (upd == null) return NotFound();
 
-            _mapper.Map(residence, upd);
+            _mapper.Map(residenceDto, upd);
 
             _repo.Update(upd);
 
             if (await _repo.SaveChangeAsync())
             {
-                return Created($"/api/Residence/{residence.ResidenceId}", residence);
+                return Created($"/api/Residence/{residenceDto.ResidenceId}", residenceDto);
             }
 
         }

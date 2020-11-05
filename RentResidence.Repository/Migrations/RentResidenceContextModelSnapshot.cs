@@ -55,6 +55,9 @@ namespace RentResidence.Repository.Migrations
 
                     b.HasKey("ClientId");
 
+                    b.HasIndex("CPF")
+                        .IsUnique();
+
                     b.HasIndex("ResidenceId")
                         .IsUnique();
 
@@ -108,7 +111,7 @@ namespace RentResidence.Repository.Migrations
 
             modelBuilder.Entity("RentResidence.Domain.Client", b =>
                 {
-                    b.HasOne("RentResidence.Domain.Residence", null)
+                    b.HasOne("RentResidence.Domain.Residence", "Residence")
                         .WithOne("Client")
                         .HasForeignKey("RentResidence.Domain.Client", "ResidenceId")
                         .OnDelete(DeleteBehavior.Restrict)

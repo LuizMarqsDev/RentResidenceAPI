@@ -31,6 +31,6 @@ namespace RentResidence.Domain
         [StringLength(20)]
         public string Telefone { get; set; }
         public int ResidenceId { get; set; }
-        public Residence Residence { get; }
+        public Residence Residence { get; private set; }
     }
 }

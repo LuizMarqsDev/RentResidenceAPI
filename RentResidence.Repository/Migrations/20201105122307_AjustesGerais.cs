@@ -2,7 +2,7 @@
 
 namespace RentResidence.Repository.Migrations
 {
-    public partial class AjusteFK : Migration
+    public partial class AjustesGerais : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -48,6 +48,12 @@ namespace RentResidence.Repository.Migrations
                         principalColumn: "ResidenceId",
                         onDelete: ReferentialAction.Restrict);
                 });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Clients_CPF",
+                table: "Clients",
+                column: "CPF",
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_Clients_ResidenceId",
