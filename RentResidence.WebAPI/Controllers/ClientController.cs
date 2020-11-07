@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.DependencyInjection;
 using RentResidence.Domain;
 using RentResidence.Repository;
 using RentResidence.WebAPI.DTO;
@@ -18,12 +19,19 @@ namespace RentResidence.WebAPI.Controllers
     {
 
         private readonly IRentResidenceRepository _repo;
-
         private readonly IMapper _mapper;
+
+
+        [ActivatorUtilitiesConstructor]
         public ClientController(IRentResidenceRepository repo, IMapper mapper)
         {
             _mapper = mapper;
             _repo = repo;
+        }
+
+        public ClientController()
+        {
+           
         }
 
         #region CRUD
@@ -33,7 +41,7 @@ namespace RentResidence.WebAPI.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet]
-        public async Task<IActionResult> Get()
+        public async Task<ActionResult<List<Client>>> Get()
         {
             try
             {
